@@ -111,7 +111,7 @@ proxy-providers:
       interval: 600
    Proxy-HK:
     type: file
-    path: ./Server/Airport.yaml
+    path: ./Server/Proxylist.yaml
     filter: '香港|Hong Kong'
     health-check:
       enable: true
@@ -119,7 +119,7 @@ proxy-providers:
       interval: 86400
    Proxy-SG:
     type: file
-    path: ./Server/Airport.yaml
+    path: ./Server/Proxylist.yaml
     filter: 'Singapore|新加坡'
     health-check:
       enable: true
@@ -127,7 +127,7 @@ proxy-providers:
       interval: 86400
    Proxy-JP:
     type: file
-    path: ./Server/Airport.yaml
+    path: ./Server/Proxylist.yaml
     filter: 'Japan|日本'
     health-check:
       enable: true
@@ -135,7 +135,7 @@ proxy-providers:
       interval: 86400
    Proxy-US:
     type: file
-    path: ./Server/Airport.yaml
+    path: ./Server/Proxylist.yaml
     filter: 'United States|美国'
     health-check:
       enable: true

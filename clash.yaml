@@ -101,7 +101,7 @@ proxy-providers:
       
    Proxy-Sub:
     type: http
-    # url: "https://duckduckgo.security/user/sub.php?token=DivineEngine"
+    url: "https://duckduckgo.security/user/sub.php?token=DivineEngine"
     path: ./Server/Proxylist.yaml
     interval: 3600
     # filter: 'Hong Kong'
@@ -120,7 +120,7 @@ proxy-providers:
    Proxy-SG:
     type: file
     path: ./Server/Proxylist.yaml
-    filter: 'Singapore|新加坡'
+    filter: 'Singapore|新加坡|狮城'
     health-check:
       enable: true
       url: http://www.gstatic.com/generate_204

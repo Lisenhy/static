@@ -108,9 +108,8 @@ proxy-providers:
     health-check:
       enable: true
       url: http://www.gstatic.com/generate_204
-      interval: 86400
-      
-  Proxy-HK:
+      interval: 600
+   Proxy-HK:
     type: file
     path: ./Server/Airport.yaml
     filter: '香港|Hong Kong'
@@ -118,7 +117,7 @@ proxy-providers:
       enable: true
       url: http://www.gstatic.com/generate_204
       interval: 86400
-  Proxy-SG:
+   Proxy-SG:
     type: file
     path: ./Server/Airport.yaml
     filter: 'Singapore|新加坡'
@@ -126,7 +125,7 @@ proxy-providers:
       enable: true
       url: http://www.gstatic.com/generate_204
       interval: 86400
-  Proxy-JP:
+   Proxy-JP:
     type: file
     path: ./Server/Airport.yaml
     filter: 'Japan|日本'
@@ -134,7 +133,7 @@ proxy-providers:
       enable: true
       url: http://www.gstatic.com/generate_204
       interval: 86400
-  Proxy-US:
+   Proxy-US:
     type: file
     path: ./Server/Airport.yaml
     filter: 'United States|美国'
@@ -161,7 +160,7 @@ proxy-groups:
     type: fallback
     use: 
       - Proxy-HK
-      url: 'http://www.gstatic.com/generate_204'
+    url: 'http://www.gstatic.com/generate_204'
     interval: 300
     
     
@@ -169,22 +168,21 @@ proxy-groups:
     type: fallback
     use: 
       - Proxy-JP
-      url: 'http://www.gstatic.com/generate_204'
+    url: 'http://www.gstatic.com/generate_204'
     interval: 300
 
   - name: "SG Fallback"
     type: fallback
     use: 
       - Proxy-SG
-      url: 'http://www.gstatic.com/generate_204'
+    url: 'http://www.gstatic.com/generate_204'
     interval: 300
-   
     
-- name: "US Fallback"
+  - name: "US Fallback"
     type: fallback
     use: 
       - Proxy-US
-      url: 'http://www.gstatic.com/generate_204'
+    url: 'http://www.gstatic.com/generate_204'
     interval: 300
   
   # 代理节点选择

@@ -161,28 +161,24 @@ proxy-groups:
     type: fallback
     use: 
       - Hong Kong
-    url: 'http://www.gstatic.com/generate_204'
-    interval: 300
+    
     
   - name: "JP Fallback"
     type: fallback
     use: 
       - Japan
-    url: 'http://www.gstatic.com/generate_204'
-    interval: 300
+
   - name: "SG Fallback"
     type: fallback
     use: 
       - Singapore
-    url: 'http://www.gstatic.com/generate_204'
-    interval: 300 
+   
     
 - name: "US Fallback"
     type: fallback
     use: 
       - United States
-    url: 'http://www.gstatic.com/generate_204'
-    interval: 300   
+  
   # 代理节点选择
   - name: "PROXY"
     type: select

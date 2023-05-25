@@ -99,10 +99,10 @@ proxy-providers:
 
 
       
-   Airport:
+   Proxy-Sub:
     type: http
     # url: "https://duckduckgo.security/user/sub.php?token=DivineEngine"
-    path: ./Server/Airport.yaml
+    path: ./Server/Proxylist.yaml
     interval: 3600
     # filter: 'Hong Kong'
     health-check:
@@ -110,7 +110,7 @@ proxy-providers:
       url: http://www.gstatic.com/generate_204
       interval: 86400
       
-  Hong Kong:
+  Proxy-HK:
     type: file
     path: ./Server/Airport.yaml
     filter: '香港|Hong Kong'
@@ -118,7 +118,7 @@ proxy-providers:
       enable: true
       url: http://www.gstatic.com/generate_204
       interval: 86400
-  Singapore :
+  Proxy-SG:
     type: file
     path: ./Server/Airport.yaml
     filter: 'Singapore|新加坡'
@@ -126,7 +126,7 @@ proxy-providers:
       enable: true
       url: http://www.gstatic.com/generate_204
       interval: 86400
-  Japan:
+  Proxy-JP:
     type: file
     path: ./Server/Airport.yaml
     filter: 'Japan|日本'
@@ -134,7 +134,7 @@ proxy-providers:
       enable: true
       url: http://www.gstatic.com/generate_204
       interval: 86400
-  United States:
+  Proxy-US:
     type: file
     path: ./Server/Airport.yaml
     filter: 'United States|美国'
@@ -160,30 +160,38 @@ proxy-groups:
   - name: "HK Fallback"
     type: fallback
     use: 
-      - Hong Kong
+      - Proxy-HK
+      url: 'http://www.gstatic.com/generate_204'
+    interval: 300
     
     
   - name: "JP Fallback"
     type: fallback
     use: 
-      - Japan
+      - Proxy-JP
+      url: 'http://www.gstatic.com/generate_204'
+    interval: 300
 
   - name: "SG Fallback"
     type: fallback
     use: 
-      - Singapore
+      - Proxy-SG
+      url: 'http://www.gstatic.com/generate_204'
+    interval: 300
    
     
 - name: "US Fallback"
     type: fallback
     use: 
-      - United States
+      - Proxy-US
+      url: 'http://www.gstatic.com/generate_204'
+    interval: 300
   
   # 代理节点选择
   - name: "PROXY"
     type: select
     use: 
-      - Airport
+      - Proxy-Sub
 
   # 白名单模式 PROXY, 黑名单模式 DIRECT, 不知道别动
   - name: "MATCH"

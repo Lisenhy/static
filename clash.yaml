@@ -1,81 +1,223 @@
-# HTTP 端口
-port: 7890
+# Port of HTTP(S) proxy server on the local end
+# port: 7890
 
-# SOCKS5 端口
-socks-port: 7891
+# Port of SOCKS5 proxy server on the local end
+# socks-port: 7891
 
-# Linux 及 macOS 的 redir 端口
+# Transparent proxy server port for Linux and macOS (Redirect TCP and TProxy UDP)
 # redir-port: 7892
 
-allow-lan: false
+# Transparent proxy server port for Linux (TProxy TCP and TProxy UDP)
+# tproxy-port: 7893
 
-# 仅适用于设置 allow-lan 为 true 时
-# "*": 绑定所有 IP 地址
-# 192.168.122.11: 绑定单个 IPv4 地址
-# "[aaaa::a8aa:ff:fe09:57d8]": 绑定单个 IPv6 地址
-# bind-address: "*"
+# HTTP(S) and SOCKS4(A)/SOCKS5 server on the same port
+mixed-port: 7890
 
-# Rule / Global / Direct (默认为 Rule 模式)
-mode: Rule
-
-# 设置输出日志的等级 (默认为 info)
-# info / warning / error / debug / silent
-log-level: info
-
-# RESTful API for clash
-external-controller: 127.0.0.1:9090
-
-# you can put the static web resource (such as clash-dashboard) to a directory, and clash would serve in `${API}/ui`
-# input is a relative path to the configuration directory or an absolute path
-# external-ui: folder
-
-# Secret for RESTful API (Optional)
-# secret: ""
-
-# 实验性功能
-experimental:
-  ignore-resolve-fail: true # 忽略 DNS 解析失败，默认值为true
-  # interface-name: en0 # 出站接口名称
-
-# 本地 SOCKS5/HTTP(S) 服务器认证
+# authentication of local SOCKS5/HTTP(S) server
 # authentication:
 #  - "user1:pass1"
 #  - "user2:pass2"
 
-# # 实验性 hosts, 支持通配符（如 *.clash.dev 甚至 *.foo.*.examplex.com ）
-# # 静态域的优先级高于通配符域（foo.example.com > *.example.com）
-hosts:
-  'mtalk.google.com': 108.177.125.188
-#   '*.clash.dev': 127.0.0.1
-#   'alpha.clash.dev': '::1'
+# Set to true to allow connections to the local-end server from
+# other LAN IP addresses
+allow-lan: false
 
-# dns:
-  # enable: true # set true to enable dns (default is false)
-  # ipv6: false # default is false
-  # listen: 0.0.0.0:53
-  # # default-nameserver: # resolve dns nameserver host, should fill pure IP
-  # #   - 114.114.114.114
-  # #   - 8.8.8.8
-  # enhanced-mode: redir-host # or fake-ip
-  # # fake-ip-range: 198.18.0.1/16 # if you don't know what it is, don't change it
-  # fake-ip-filter: # fake ip white domain list
-  #   - '*.lan'
-  #   - localhost.ptlogin2.qq.com
-  # nameserver:
-  #   - 114.114.114.114
-  #   - tls://dns.rubyfish.cn:853 # dns over tls
-  #   - https://1.1.1.1/dns-query # dns over https
-  # fallback: # concurrent request with nameserver, fallback used when GEOIP country isn't CN
+# This is only applicable when `allow-lan` is `true`
+# '*': bind all IP addresses
+# 192.168.122.11: bind a single IPv4 address
+# "[aaaa::a8aa:ff:fe09:57d8]": bind a single IPv6 address
+bind-address: '*'
+
+# Clash router working mode
+# rule: rule-based packet routing
+# global: all packets will be forwarded to a single endpoint
+# direct: directly forward the packets to the Internet
+mode: rule
+
+# Clash by default prints logs to STDOUT
+# info / warning / error / debug / silent
+log-level: info
+
+# When set to false, resolver won't translate hostnames to IPv6 addresses
+ipv6: false
+
+# RESTful web API listening address
+external-controller: 127.0.0.1:9090
+
+# A relative path to the configuration directory or an absolute path to a
+# directory in which you put some static web resource. Clash core will then
+# serve it at `${API}/ui`.
+# external-ui: folder
+
+# Secret for the RESTful API (optional)
+# Authenticate by spedifying HTTP header `Authorization: Bearer ${secret}`
+# ALWAYS set a secret if RESTful API is listening on 0.0.0.0
+# secret: ""
+
+# Outbound interface name
+# interface-name: en0
+
+# Static hosts for DNS server and connection establishment (like /etc/hosts)
+#
+# Wildcard hostnames are supported (e.g. *.clash.dev, *.foo.*.example.com)
+# Non-wildcard domain names have a higher priority than wildcard domain names
+# e.g. foo.example.com > *.example.com > .example.com
+# P.S. +.foo.com equals to .foo.com and foo.com
+hosts:
+  # '*.clash.dev': 127.0.0.1
+  # '.dev': 127.0.0.1
+  # 'alpha.clash.dev': '::1'
+
+  # Firebase Cloud Messaging
+  'mtalk.google.com': 108.177.125.188
+  # Google Dl
+  'dl.google.com': 180.163.151.161
+  'dl.l.google.com': 180.163.151.161
+
+profile:
+  # Store the `select` results in $HOME/.config/clash/.cache
+  # set false If you don't want this behavior
+  # when two different configurations have groups with the same name, the selected values are shared
+  store-selected: false
+
+# DNS server settings
+# This section is optional. When not present, the DNS server will be disabled.
+dns:
+  enable: false
+  listen: 0.0.0.0:53
+  # ipv6: false # when the false, response to AAAA questions will be empty
+
+  # These nameservers are used to resolve the DNS nameserver hostnames below.
+  # Specify IP addresses only
+  default-nameserver:
+    - 119.29.29.29
+  enhanced-mode: redir-host # or fake-ip
+  fake-ip-range: 198.18.0.1/16 # Fake IP addresses pool CIDR
+  # use-hosts: true # lookup hosts and return IP record
+  
+  # Hostnames in this list will not be resolved with fake IPs
+  # i.e. questions to these domain names will always be answered with their
+  # real IP addresses
+  fake-ip-filter:
+    - '*.lan'
+    - localhost.ptlogin2.qq.com
+    - '+.srv.nintendo.net'
+    - '+.stun.playstation.net'
+    - '+.msftconnecttest.com'
+    - '+.msftncsi.com'
+    - '+.xboxlive.com'
+    - 'msftconnecttest.com'
+    - 'xbox.*.microsoft.com'
+    - '*.battlenet.com.cn'
+    - '*.battlenet.com'
+    - '*.blzstatic.cn'
+    - '*.battle.net'
+  
+  # Supports UDP, TCP, DoT, DoH. You can specify the port to connect to.
+  # All DNS questions are sent directly to the nameserver, without proxies
+  # involved. Clash answers the DNS question with the first result gathered.
+  nameserver:
+    - 119.29.29.29
+    # - 114.114.114.114 # default value
+    # - 8.8.8.8 # default value
+    # - tls://dns.rubyfish.cn:853 # DNS over TLS
+    # - https://1.1.1.1/dns-query # DNS over HTTPS
+    # - dhcp://en0 # dns from dhcp
+
+  # When `fallback` is present, the DNS server will send concurrent requests
+  # to the servers in this section along with servers in `nameservers`.
+  # The answers from fallback servers are used when the GEOIP country
+  # is not `CN`.
+  # fallback:
   #   - tcp://1.1.1.1
+
+  # If IP addresses resolved with servers in `nameservers` are in the specified
+  # subnets below, they are considered invalid and results from `fallback`
+  # servers are used instead.
+  #
+  # IP address resolved with servers in `nameserver` is used when
+  # `fallback-filter.geoip` is true and when GEOIP of the IP address is `CN`.
+  #
+  # If `fallback-filter.geoip` is false, results from `nameserver` nameservers
+  # are always used if not match `fallback-filter.ipcidr`.
+  #
+  # This is a countermeasure against DNS pollution attacks.
   # fallback-filter:
-  #   geoip: true # default
-  #   ipcidr: # ips in these subnets will be considered polluted
+  #   geoip: true
+  #   geoip-code: CN
+  #   ipcidr:
   #     - 240.0.0.0/4
+  #   domain:
+  #     - '+.google.com'
+  #     - '+.facebook.com'
+  #     - '+.youtube.com'
+  
+  # Lookup domains via specific nameservers
+  # nameserver-policy:
+  #   'www.baidu.com': '114.114.114.114'
+  #   '+.internal.crop.com': '10.0.0.1'
+
+#
+# https://github.com/Dreamacro/clash/wiki/premium-core-features
+#
+# tun:
+#   enable: true
+#   stack: system # or gvisor
+#   # dns-hijack:
+#   #   - 8.8.8.8:53
+#   #   - tcp://8.8.8.8:53
+#   macOS-auto-route: true # auto set global route
+#   macOS-auto-detect-interface: true # conflict with interface-name
 
 proxies:
-# 支持的协议及加密算法示例请查阅 Clash 项目 README 以使用最新格式：https://github.com/Dreamacro/clash/blob/master/README.md
+# 支持的协议及加密算法示例请查阅 Clash 项目 README 以使用最新格式：https://github.com/Dreamacro/clash/wiki/configuration
 
   # Shadowsocks(Websocket + TLS)
+  - name: "1"
+    type: ss
+    server: server
+    port: 443
+    cipher: chacha20-ietf-poly1305
+    password: "password"
+    plugin: v2ray-plugin
+    plugin-opts:
+      mode: websocket # no QUIC now
+      tls: true # wss
+      # skip-cert-verify: true
+      # host: bing.com
+      path: "/s"
+      # mux: true
+      # headers:
+      #   custom: value
+
+  # VMess(Websocket + TLS)
+  - name: "2"
+    type: vmess
+    server: v2ray.cool
+    port: 443
+    uuid: a3482e88-686a-4a58-8126-99c9df64b7bf
+    alterId: 32
+    cipher: auto
+    # udp: true
+    tls: true
+    # skip-cert-verify: true
+    network: ws
+    ws-path: /v
+    # ws-headers:
+    #   Host: v2ray.com
+
+  # Trojan
+  - name: "3"
+    type: trojan
+    server: server
+    port: 443
+    password: yourpsk
+    # udp: true
+    # sni: example.com # aka server name
+    # alpn:
+    #   - h2
+    #   - http/1.1
+    # skip-cert-verify: true
 
 # 服务器节点订阅
 proxy-providers:
@@ -92,58 +234,34 @@ proxy-providers:
   #
   # 「url」参数填写订阅链接
   #
-  # 订阅链接可以使用 API 进行转换，如：https://sub.dler.io/
+  # 订阅链接可以使用 API 进行转换，如：https://dove.589669.xyz/web
   #
-  # 1.模式选择「进阶模式」 2.填写订阅链接 3.勾选「输出为 Node List」 4.「生成订阅链接」
   #
 
+  # 此处只是订阅示例，如果没有订阅链接的使用需求，此处及 proxy-groups 的相关内容可删除
 
-      
-   Proxy-Sub:
+  DuckDuckGoList: #「冲鸭机场」订阅
     type: http
-    url: "https://duckduckgo.security/user/sub.php?token=DivineEngine"
-    path: ./Server/Proxylist.yaml
+    url: "https://raw.githubusercontent.com/DivineEngine/Profiles/master/Clash/ProxyList/List.yaml" # 放机场订阅链接
     interval: 3600
-    # filter: 'Hong Kong'
+    path: ./Proxy/List.yaml # 注意此处文件名不可相同
     health-check:
       enable: true
-      url: http://www.gstatic.com/generate_204
       interval: 600
-   Proxy-HK:
-    type: file
-    path: ./Server/Proxylist.yaml
-    filter: '香港|Hong Kong'
-    health-check:
-      enable: true
       url: http://www.gstatic.com/generate_204
-      interval: 86400
-   Proxy-SG:
-    type: file
-    path: ./Server/Proxylist.yaml
-    filter: 'Singapore|新加坡|狮城'
-    health-check:
-      enable: true
-      url: http://www.gstatic.com/generate_204
-      interval: 86400
-   Proxy-JP:
-    type: file
-    path: ./Server/Proxylist.yaml
-    filter: 'Japan|日本'
-    health-check:
-      enable: true
-      url: http://www.gstatic.com/generate_204
-      interval: 86400
-   Proxy-US:
-    type: file
-    path: ./Server/Proxylist.yaml
-    filter: 'United States|美国'
-    health-check:
-      enable: true
-      url: http://www.gstatic.com/generate_204
-      interval: 86400    
+
+  # DuckDuckGoUS: #「冲鸭机场」订阅美国地区节点
+  #   type: http
+  #   url: "https://raw.githubusercontent.com/DivineEngine/Profiles/master/Clash/ProxyList/US.yaml" # 放机场订阅链接
+  #   interval: 3600
+  #   path: ./Proxy/US.yaml # 注意此处文件名不可相同
+  #   health-check:
+  #     enable: true
+  #     interval: 600
+  #     url: http://www.gstatic.com/generate_204
 
 proxy-groups:
-# 策略组示例请查阅 Clash 项目 README 以使用最新格式：https://github.com/Dreamacro/clash/blob/master/README.md
+# 策略组示例请查阅 Clash 项目 README 以使用最新格式：https://github.com/Dreamacro/clash/wiki/configuration
 
 #
 # 策略组说明
@@ -155,41 +273,51 @@ proxy-groups:
 # 「PROXY」是代理规则策略，它可以指定为某个节点或嵌套一个其他策略组，如：「自动测试」、「Fallback」或「负载均衡」的策略组，关于这 3 个策略组的具体示例可以看官方示例：https://github.com/Dreamacro/clash
 #
 
+  # 注意此处的「use」而不是「proxies」，当然也可以不用在此先嵌套一个策略组进行选择，可以直接使用，如
+  #
+  # # 代理节点选择
+  # - name: "PROXY"
+  #   type: select
+  #   use:
+  #     - DuckDuckGo # 嵌套使用订阅节点策略组
+  #   proxies:
+  #     - Fallback
+  #     - 1
+  #     - 2
+  #     - 3
+  #
+  # 但如果订阅节点很多选起来就很麻烦，不如先嵌套一个策略组进行手动或自动的选择。
+
+  # 手动选择订阅节点
+  - name: "DuckDuckGo"
+    type: select # 亦可使用 fallback 或 load-balance
+    use: # 注意此处是「use」
+      - DuckDuckGoList # 这是上面「proxy-providers」的名称
+
+  # - name: "US"
+  #   type: select # 亦可使用 fallback 或 load-balance
+  #   use: # 注意此处是「use」
+  #     - DuckDuckGoUS # 这是上面「proxy-providers」的名称
+
   # Fallback 比较实用的策略组类型，用于测试服务器节点的可用性，当第一个节点不可用时切换到第二个，以此类推。
-  - name: "HK Fallback"
+  - name: "Fallback"
     type: fallback
-    use: 
-      - Proxy-HK
-    url: 'http://www.gstatic.com/generate_204'
-    interval: 300
-    
-    
-  - name: "JP Fallback"
-    type: fallback
-    use: 
-      - Proxy-JP
+    proxies:
+      - 1
+      - 2
+      - 3
     url: 'http://www.gstatic.com/generate_204'
     interval: 300
 
-  - name: "SG Fallback"
-    type: fallback
-    use: 
-      - Proxy-SG
-    url: 'http://www.gstatic.com/generate_204'
-    interval: 300
-    
-  - name: "US Fallback"
-    type: fallback
-    use: 
-      - Proxy-US
-    url: 'http://www.gstatic.com/generate_204'
-    interval: 300
-  
   # 代理节点选择
   - name: "PROXY"
     type: select
-    use: 
-      - Proxy-Sub
+    proxies:
+      - Fallback
+      - 1
+      - 2
+      - 3
+      - DuckDuckGo # 嵌套使用订阅节点策略组
 
   # 白名单模式 PROXY, 黑名单模式 DIRECT, 不知道别动
   - name: "MATCH"
@@ -203,11 +331,18 @@ proxy-groups:
     type: select
     proxies:
       - PROXY
-     
+      - 1
+      - 2
+      - 3
+      # - US
 
-
-
-
+  # 中国流媒体服务（面向海外版本）
+  # 用于观看部分国内流媒体面向港澳台的地区的限定内容，此处应放港澳台节点，如果没有此需求可删除此处策略组及相关规则
+  - name: "StreamingSE"
+    type: select
+    proxies:
+      - DIRECT
+      - 2
 
 # 关于 Rule Provider 请查阅：https://lancellc.gitbook.io/clash/clash-config-file/rule-provider
 
@@ -254,8 +389,6 @@ rule-providers:
     url: https://raw.githubusercontent.com/DivineEngine/Profiles/master/Clash/RuleSet/China.yaml
     interval: 86400
 
-
-
 # 规则
 rules:
   # Unbreak
@@ -265,6 +398,9 @@ rules:
 
   # (Streaming Media)
   - RULE-SET,Streaming,Streaming
+
+  # (StreamingSE)
+  - RULE-SET,StreamingSE,StreamingSE
 
   # (DNS Cache Pollution) / (IP Blackhole) / (Region-Restricted Access Denied) / (Network Jitter)
   - RULE-SET,Global,PROXY
@@ -279,9 +415,8 @@ rules:
   - IP-CIDR,127.0.0.0/8,DIRECT
   - IP-CIDR,100.64.0.0/10,DIRECT
   - IP-CIDR,224.0.0.0/4,DIRECT
-
-  # （可选）使用来自 ipipdotnet 的 ChinaIP 以解决数据不准确的问题，使用 ChinaIP.yaml 时可禁用下列直至（包括）「GEOIP,CN」规则
-  # - RULE-SET,ChinaIP,DIRECT
+  - IP-CIDR,fe80::/10,DIRECT
+  
   # Tencent
   - IP-CIDR,119.28.28.28/32,DIRECT
   - IP-CIDR,182.254.116.0/24,DIRECT
